@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>提取Youtube视频封面</title>
+    <meta name="copyright" content="The Unlicense">
+    <meta name="author" content="girl-dream">
+    <link rel="shortcut icon" href="https://www.youtube.com/s/desktop/1dd30f43/img/favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --input-border: #ddd;
+            --input-bg: #ffffff;
+            --primary-color: #ff0000;
+            --primary-hover: #cc0000;
+            --tag-bg: #eee;
+            --tag-text: #555;
+            --secondary-btn-bg: #444;
+            --secondary-btn-hover: #222;
+            --img-placeholder: #ddd;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --text-color: #e0e0e0;
+                --input-border: #333;
+                --input-bg: #1e1e1e;
+                --primary-color: #ff3333;
+                --primary-hover: #ff5555;
+                --tag-bg: #333;
+                --tag-text: #bbb;
+                --secondary-btn-bg: #555;
+                --secondary-btn-hover: #777;
+                --img-placeholder: #2a2a2a;
+                --shadow: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body > input[type="url"] {
+            width: 100%;
+            max-width: 600px;
+            padding: 12px 15px;
+            font-size: 16px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s, background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        body > input[type="url"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        body > button {
+            width: 100%;
+            max-width: 630px;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 30px;
+        }
+
+        body > button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        body > div {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 600px) {
+            body > div {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        body > div > div > div:first-child {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--tag-text);
+            font-size: 14px;
+            display: inline-block;
+            background: var(--tag-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            background-color: var(--img-placeholder);
+            border-radius: 8px;
+            display: block;
+            object-fit: cover;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        body > div > div:nth-child(even) {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        body > div > div:nth-child(even) input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 13px;
+        }
+
+        body > div > div:nth-child(even) button {
+            background-color: var(--secondary-btn-bg);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: background 0.3s;
+        }
+
+        body > div > div:nth-child(even) button:hover {
+            background-color: var(--secondary-btn-hover);
+        }
+    </style>
+</head>
+<body>
+    <input type="url" placeholder="在此处填写YouTube url,例子:https://www.youtube.com/watch?v=erLk59H86ww">
+    <div>
+        <div><div>720p</div><img id="maxresdefault"></div>
+        <div><input type="url" id="maxresdefaultUrl"><button id="maxresdefaultBtn">复制链接</button></div>
+        <div><div>360p</div><img id="hqdefault"></div>
+        <div><input type="url" id="hqdefaultUrl"><button id="hqdefaultBtn">复制链接</button></div>
+    </div>
+    <button id="get">提取图片</button>
+</body>
+    <script>
+        const url = document.querySelector('input')
+
+        get.onclick = ()=>{
+            const params = new URLSearchParams(new URL(url.value).search)
+            const maxresUrl = `https://i.ytimg.com/vi/${params.get('v')}/maxresdefault.jpg`
+            maxresdefault.src = maxresUrl
+            maxresdefaultUrl.value = maxresUrl
+            maxresdefaultBtn.onclick = () => {
+                navigator.clipboard.writeText(maxresUrl)
+            }
+            const hqdeUrl = `https://i.ytimg.com/vi/${params.get('v')}/hqdefault.jpg`
+            hqdefault.src = hqdeUrl
+            hqdefaultUrl.value = hqdeUrl
+            hqdefaultBtn.onclick = () => {
+                navigator.clipboard.writeText(hqdeUrl)
+            }
+        }
+    </script>
+</html>
