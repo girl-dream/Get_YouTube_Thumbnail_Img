@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-    <meta charset="utf-8">
-    <title>提取Youtube视频封面</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="copyright" content="The Unlicense">
     <meta name="author" content="girl-dream">
+    <title>提取Youtube视频封面</title>
     <link rel="shortcut icon" href="https://www.youtube.com/s/desktop/1dd30f43/img/favicon.ico" type="image/x-icon">
     <style>
         :root {
@@ -16,8 +18,8 @@
             --primary-hover: #cc0000;
             --tag-bg: #eee;
             --tag-text: #555;
-            --secondary-btn-bg: #444;
-            --secondary-btn-hover: #222;
+            --secondary-btn-bg: #F6F7F8;
+            --secondary-btn-hover: #E3E5E7;
             --img-placeholder: #ddd;
             --shadow: rgba(0, 0, 0, 0.1);
         }
@@ -50,9 +52,17 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        body > input[type="url"] {
+        /* 统一 Form 布局 */
+        form {
             width: 100%;
-            max-width: 600px;
+            max-width: 630px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #url-input {
+            width: 100%;
             padding: 12px 15px;
             font-size: 16px;
             background-color: var(--input-bg);
@@ -62,15 +72,15 @@
             outline: none;
             transition: border-color 0.3s, background-color 0.3s;
             margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
-        body > input[type="url"]:focus {
+        #url-input:focus {
             border-color: var(--primary-color);
         }
 
-        body > button {
+        .submit-btn {
             width: 100%;
-            max-width: 630px;
             padding: 12px;
             background-color: var(--primary-color);
             color: white;
@@ -83,28 +93,29 @@
             margin-bottom: 30px;
         }
 
-        body > button:hover {
+        .submit-btn:hover {
             background-color: var(--primary-hover);
         }
 
-        body > div {
+        .results-container {
             width: 100%;
             max-width: 900px;
             display: flex;
             flex-direction: column;
         }
 
-        @media (max-width: 600px) {
-            body > div {
-                grid-template-columns: 1fr;
-            }
+        .result-item {
+            margin-bottom: 20px;
         }
 
-        body > div > div > div:first-child {
+        img:not([src]) {
+            display: none;
+        }
+
+        .tag {
             font-weight: bold;
             margin-bottom: 8px;
             color: var(--tag-text);
-            font-size: 14px;
             display: inline-block;
             background: var(--tag-bg);
             padding: 2px 8px;
@@ -112,23 +123,28 @@
         }
 
         img {
-            width: 100%;
-            height: auto;
             background-color: var(--img-placeholder);
             border-radius: 8px;
-            display: block;
             object-fit: cover;
             box-shadow: 0 4px 12px var(--shadow);
         }
 
-        body > div > div:nth-child(even) {
+        #maxresdefault {
+            width: 100%;
+        }
+
+        #hqdefault {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .copy-row {
             display: flex;
             gap: 8px;
             margin-bottom: 20px;
-            margin-top: 10px;
         }
 
-        body > div > div:nth-child(even) input {
+        .copy-row input {
             flex: 1;
             padding: 8px;
             border: 1px solid var(--input-border);
@@ -138,9 +154,10 @@
             font-size: 13px;
         }
 
-        body > div > div:nth-child(even) button {
+        .copy-row button {
+            transition: background-color .3s, color .3s;
             background-color: var(--secondary-btn-bg);
-            color: white;
+            color: var(--tag-text);
             border: none;
             padding: 0 15px;
             border-radius: 4px;
@@ -150,38 +167,91 @@
             transition: background 0.3s;
         }
 
-        body > div > div:nth-child(even) button:hover {
+        .copy-row button:hover {
             background-color: var(--secondary-btn-hover);
         }
     </style>
 </head>
-<body>
-    <input type="url" placeholder="在此处填写YouTube url,例子:https://www.youtube.com/watch?v=erLk59H86ww">
-    <div>
-        <div><div>720p</div><img id="maxresdefault"></div>
-        <div><input type="url" id="maxresdefaultUrl"><button id="maxresdefaultBtn">复制链接</button></div>
-        <div><div>360p</div><img id="hqdefault"></div>
-        <div><input type="url" id="hqdefaultUrl"><button id="hqdefaultBtn">复制链接</button></div>
-    </div>
-    <button id="get">提取图片</button>
-</body>
-    <script>
-        const url = document.querySelector('input')
 
-        get.onclick = ()=>{
-            const params = new URLSearchParams(new URL(url.value).search)
+<body>
+    <form>
+        <input type="url" id="url-input" placeholder="在此处填写YouTube链接 (例如: https://www.youtube.com/watch?v=dQw4w9WgXcQ)"
+            required>
+        <input type="submit" class="submit-btn" value="提取图片">
+        <div class="results-container">
+            <!-- 720p 组 -->
+            <div class="result-item">
+                <div class="tag">720p</div>
+                <img id="maxresdefault">
+            </div>
+            <div class="copy-row">
+                <input type="url" id="maxresdefaultUrl" readonly>
+                <button type="button" id="maxresdefaultBtn">复制链接</button>
+            </div>
+
+            <!-- 360p 组 -->
+            <div class="result-item">
+                <div class="tag">360p</div>
+                <img id="hqdefault">
+            </div>
+            <div class="copy-row">
+                <input type="url" id="hqdefaultUrl" readonly>
+                <button type="button" id="hqdefaultBtn">复制链接</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        const url_input = document.getElementById('url-input')
+
+        document.querySelector('form').onsubmit = (e) => {
+            e.preventDefault()
+            const url = new URL(url_input.value)
+            if (!url.host.includes('youtube')) {
+                alert('非Youtube链接')
+                return
+            }
+            const params = new URLSearchParams(url.search)
             const maxresUrl = `https://i.ytimg.com/vi/${params.get('v')}/maxresdefault.jpg`
             maxresdefault.src = maxresUrl
             maxresdefaultUrl.value = maxresUrl
-            maxresdefaultBtn.onclick = () => {
-                navigator.clipboard.writeText(maxresUrl)
+            maxresdefaultBtn.onclick = function () {
+                debounce(copy(this, hqdeUrl), 3000)
             }
             const hqdeUrl = `https://i.ytimg.com/vi/${params.get('v')}/hqdefault.jpg`
             hqdefault.src = hqdeUrl
             hqdefaultUrl.value = hqdeUrl
-            hqdefaultBtn.onclick = () => {
-                navigator.clipboard.writeText(hqdeUrl)
+            hqdefaultBtn.onclick = function () {
+                debounce(copy(this, hqdeUrl), 3000)
+            }
+        }
+
+        function copy(dom, text) {
+            try {
+                navigator.clipboard.writeText(text)
+                dom.textContent = '复制成功'
+                dom.style.color = '#28a745'
+            } catch (error) {
+                dom.textContent = '复制失败'
+                dom.style.color = '#dc3545'
+                console.error(error)
+            } finally {
+                setTimeout(() => {
+                    dom.textContent = '复制链接'
+                    dom.style.color = 'var(--tag-text)'
+                }, 1000)
+            }
+        }
+
+        function debounce(func, delay) {
+            let timer
+            return function () {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                    func.apply(this, arguments)
+                }, delay)
             }
         }
     </script>
+</body>
+
 </html>
