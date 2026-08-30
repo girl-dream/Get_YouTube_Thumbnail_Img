@@ -257,7 +257,7 @@
             navigator.clipboard.readText().then(text => {
                 try {
                     const url = new URL(text.trim())
-                    if (url.hostname == 'www.youtube.com') {
+                    if (url.hostname.includes('youtube')) {
                         url_input.value = text
                     } else{
                         alert('复制的不是YouTube URL')
